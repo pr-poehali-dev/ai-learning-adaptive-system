@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 
 const AnalyticsTab = () => {
+  const [hoveredBar, setHoveredBar] = useState<number | null>(null);
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="text-center mb-8">
@@ -83,15 +86,58 @@ const AnalyticsTab = () => {
           <CardDescription>Твой прогресс за последний месяц</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-64 flex items-end justify-between gap-2">
-            {[65, 70, 68, 75, 78, 82, 85, 87].map((height, idx) => (
-              <div key={idx} className="flex-1 flex flex-col items-center gap-2">
-                <div className="w-full bg-gradient-to-t from-purple-500 to-pink-500 rounded-t-lg hover:from-purple-600 hover:to-pink-600 transition-colors" style={{ height: `${height}%` }} />
-                <span className="text-xs text-muted-foreground">
-                  {idx + 1} нед
+          <div className="h-80 flex items-end justify-between gap-3 px-4 relative">
+            {[
+              { week: 1, score: 65, tests: 2 },
+              { week: 2, score: 70, tests: 3 },
+              { week: 3, score: 68, tests: 2 },
+              { week: 4, score: 75, tests: 4 },
+              { week: 5, score: 78, tests: 3 },
+              { week: 6, score: 82, tests: 4 },
+              { week: 7, score: 85, tests: 3 },
+              { week: 8, score: 87, tests: 5 },
+            ].map((data, idx) => (
+              <div 
+                key={idx} 
+                className="flex-1 flex flex-col items-center gap-2 relative group"
+                onMouseEnter={() => setHoveredBar(idx)}
+                onMouseLeave={() => setHoveredBar(null)}
+              >
+                <div 
+                  className="w-full bg-gradient-to-t from-purple-500 to-pink-500 rounded-t-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-500 ease-out cursor-pointer relative"
+                  style={{ 
+                    height: `${data.score}%`,
+                    animation: `slide-up 0.${idx + 5}s ease-out`
+                  }}
+                >
+                  {hoveredBar === idx && (
+                    <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap z-10 animate-fade-in shadow-lg">
+                      <div className="font-bold text-center mb-1">{data.score}%</div>
+                      <div className="text-gray-300">{data.tests} теста</div>
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-white font-bold text-lg drop-shadow-lg">{data.score}</span>
+                  </div>
+                </div>
+                <span className="text-xs text-muted-foreground font-medium">
+                  {data.week} нед
                 </span>
               </div>
             ))}
+          </div>
+          <div className="mt-6 pt-4 border-t border-purple-100">
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" />
+                <span className="text-muted-foreground">Средний балл по неделям</span>
+              </div>
+              <div className="flex items-center gap-1 text-green-600 font-semibold">
+                <Icon name="TrendingUp" size={16} />
+                <span>+22% за месяц</span>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
